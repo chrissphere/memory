@@ -601,15 +601,15 @@ function renderCards(containerId, cards, mode) {
     // Fan layout: all rank corners land on the same horizontal line.
     // CSS rotate(θ): y'_topleft = sin(θ)·(-CW/2) + cos(θ)·(-CH)
     // rank_y = pivotY − sin(θ)·CW/2 − CH·cos(θ) = C  →  topY = C + sin(θ)·CW/2 − CH·(1−cosθ)
-    const SPREAD = Math.max(30, cards.length * 5);
-    const CW = Math.min(114, Math.max(68, Math.floor(W * 0.26)));
+    // Wide spread (7°/card) to match natural held-fan look
+    const SPREAD = Math.max(40, cards.length * 7);
+    const CW = Math.min(120, Math.max(76, Math.floor(W * 0.28)));
     const CH = Math.round(CW * 1.4);
     const total = cards.length;
     const step = total > 1 ? SPREAD / (total - 1) : 0;
     const cx = W / 2;
     const halfRad = SPREAD / 2 * Math.PI / 180;
 
-    // C = offset so leftmost card (most negative sin, largest negative term) stays ≥ 0
     const C = CW / 2 * Math.sin(halfRad) + CH * (1 - Math.cos(halfRad)) + 4;
     const stageH = Math.round(1.5 * CW * Math.sin(halfRad) + CH) + 14;
 
