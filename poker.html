@@ -323,8 +323,10 @@
 
 <script>
 const SUITS = ['♠','♥','♦','♣'];
+const SUITS_ALL = ['♠','♥','♦','♣','★','☆'];
 const RANKS = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-const RED_SUITS = new Set(['♥','♦']);
+const RANKS_ALL = ['A','2','3','4','5','6','7','8','9','10','J','Q','K','大王','小王'];
+const RED_SUITS = new Set(['♥','♦','★']);
 const REVIEW_DURATION = 5;
 
 let cfg = { time: 10, mode: 'fan', reviewMax: 1 };
@@ -357,6 +359,8 @@ function shuffle(arr) {
 function dealCards() {
   const deck = [];
   for (const s of SUITS) for (const r of RANKS) deck.push({ suit: s, rank: r });
+  deck.push({ rank: '大王', suit: '★', isJoker: true, isBig: true });
+  deck.push({ rank: '小王', suit: '☆', isJoker: true, isBig: false });
   return shuffle(deck).slice(0, 5);
 }
 
@@ -381,39 +385,150 @@ function makeCorner(rank, suit, cls) {
 }
 
 function getFaceCardSVG(rank, suit, isRed) {
-  const color = isRed ? '#e63946' : '#1a1a2e';
-  const crowns = { 'J': '♛', 'Q': '♕', 'K': '♔' };
-  return `<svg width="80" height="100" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
-    <text x="40" y="22" text-anchor="middle" font-size="20" fill="${color}">${crowns[rank]}</text>
-    <circle cx="40" cy="42" r="12" fill="none" stroke="${color}" stroke-width="2.5"/>
-    <circle cx="36" cy="40" r="1.5" fill="${color}"/>
-    <circle cx="44" cy="40" r="1.5" fill="${color}"/>
-    <path d="M 35 46 Q 40 50 45 46" stroke="${color}" stroke-width="1.5" fill="none"/>
-    <line x1="40" y1="54" x2="40" y2="72" stroke="${color}" stroke-width="2.5"/>
-    <line x1="30" y1="60" x2="50" y2="60" stroke="${color}" stroke-width="2.5"/>
-    <line x1="40" y1="72" x2="32" y2="84" stroke="${color}" stroke-width="2.5"/>
-    <line x1="40" y1="72" x2="48" y2="84" stroke="${color}" stroke-width="2.5"/>
-    <text x="40" y="98" text-anchor="middle" font-size="16" font-weight="bold" fill="${color}">${rank}</text>
+  const c  = isRed ? '#B71C1C' : '#1A237E';  // main deep color
+  const c2 = isRed ? '#E53935' : '#283593';  // lighter shade
+  const sk = '#FDDCB5';                       // skin
+  const gd = '#F9A825';                       // gold
+
+  const face = `
+    <ellipse cx="50" cy="80" rx="18" ry="20" fill="${sk}"/>
+    <ellipse cx="43" cy="77" rx="3.5" ry="3.5" fill="${c}"/>
+    <ellipse cx="57" cy="77" rx="3.5" ry="3.5" fill="${c}"/>
+    <circle cx="44.5" cy="75.5" r="1" fill="white"/>
+    <circle cx="58.5" cy="75.5" r="1" fill="white"/>`;
+
+  if (rank === 'K') return `<svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="14,52 25,30 37,50 50,22 63,50 75,30 86,52" fill="${gd}"/>
+    <rect x="12" y="50" width="76" height="10" rx="4" fill="${gd}"/>
+    <circle cx="25" cy="36" r="3" fill="white" opacity=".9"/>
+    <circle cx="50" cy="27" r="4" fill="white" opacity=".9"/>
+    <circle cx="75" cy="36" r="3" fill="white" opacity=".9"/>
+    <ellipse cx="33" cy="85" rx="7" ry="16" fill="${c}" opacity=".45"/>
+    <ellipse cx="67" cy="85" rx="7" ry="16" fill="${c}" opacity=".45"/>
+    ${face}
+    <path d="M36 70 L47 68" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M53 68 L64 70" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M49 84 Q47 88 49 90 Q50 91 51 90 Q53 88 51 84" stroke="${c}" stroke-width="1.2" fill="none" opacity=".5"/>
+    <path d="M38 92 Q44 88 50 91 Q56 88 62 92" stroke="${c}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M32 97 Q50 114 68 97 Q68 111 50 117 Q32 111 32 97Z" fill="${c}" opacity=".38"/>
+    <path d="M18 140 L22 110 L38 100 L50 104 L62 100 L78 110 L82 140Z" fill="${c}"/>
+    <path d="M38 100 Q50 108 62 100" stroke="${gd}" stroke-width="2.5" fill="none"/>
+    <text x="50" y="125" text-anchor="middle" dominant-baseline="central" font-size="18" fill="${gd}" font-weight="bold">${suit}</text>
+    <line x1="77" y1="62" x2="85" y2="112" stroke="${gd}" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="80" cy="59" r="6" fill="${gd}"/><circle cx="80" cy="59" r="2.5" fill="white" opacity=".6"/>
+  </svg>`;
+
+  if (rank === 'Q') return `<svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20,54 L30,32 Q40,48 50,26 Q60,48 70,32 L80,54Z" fill="${gd}"/>
+    <rect x="18" y="52" width="64" height="9" rx="3" fill="${gd}"/>
+    <circle cx="30" cy="38" r="3" fill="white" opacity=".9"/>
+    <circle cx="50" cy="32" r="4" fill="white" opacity=".9"/>
+    <circle cx="70" cy="38" r="3" fill="white" opacity=".9"/>
+    <path d="M32 62 Q20 85 24 107" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round" opacity=".65"/>
+    <path d="M68 62 Q80 85 76 107" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round" opacity=".65"/>
+    ${face}
+    <path d="M37 72 Q42 70 46 72" stroke="${c}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M54 72 Q58 70 63 72" stroke="${c}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M40 75 Q43 73 46 75" stroke="${c}" stroke-width="1" fill="none"/>
+    <path d="M54 75 Q57 73 60 75" stroke="${c}" stroke-width="1" fill="none"/>
+    <path d="M44 88 Q50 86 56 88" stroke="${c}" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M44 88 Q50 94 56 88" fill="${c}" opacity=".55"/>
+    <path d="M34 103 Q50 115 66 103" stroke="${gd}" stroke-width="2" fill="none"/>
+    <circle cx="42" cy="109" r="2" fill="${gd}"/>
+    <circle cx="50" cy="113" r="2.5" fill="${gd}"/>
+    <circle cx="58" cy="109" r="2" fill="${gd}"/>
+    <path d="M18 140 L23 108 L38 100 L50 104 L62 100 L77 108 L82 140Z" fill="${c}"/>
+    <text x="50" y="124" text-anchor="middle" dominant-baseline="central" font-size="17" fill="${gd}" font-weight="bold">${suit}</text>
+    <line x1="75" y1="64" x2="82" y2="108" stroke="${gd}" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="78" cy="60" r="6" fill="${c}" stroke="${gd}" stroke-width="2"/>
+    <circle cx="78" cy="60" r="2.5" fill="${gd}"/>
+  </svg>`;
+
+  // Jack
+  const ac = isRed ? '#E57373' : '#7986CB';
+  return `<svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="48" cy="46" rx="27" ry="11" fill="${c}" transform="rotate(-6,48,46)"/>
+    <path d="M73 38 Q90 16 85 6 Q79 20 78 30 Q86 12 81 5 Q73 20 76 30" fill="${ac}" opacity=".9"/>
+    <path d="M73 38 Q82 22 77 16 Q72 26 75 30" fill="${c}" opacity=".4"/>
+    <path d="M21 52 Q48 43 74 46" stroke="${gd}" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="36" cy="49" r="4" fill="${gd}"/>
+    <text x="36" y="50" text-anchor="middle" dominant-baseline="central" font-size="5.5" fill="${c}" font-weight="bold">${suit}</text>
+    <ellipse cx="50" cy="78" rx="17" ry="19" fill="${sk}"/>
+    <ellipse cx="43" cy="75" rx="3.5" ry="3.5" fill="${c}"/>
+    <ellipse cx="57" cy="75" rx="3.5" ry="3.5" fill="${c}"/>
+    <circle cx="44.5" cy="73.5" r="1" fill="white"/>
+    <circle cx="58.5" cy="73.5" r="1" fill="white"/>
+    <path d="M38 70 L47 68" stroke="${c}" stroke-width="2" stroke-linecap="round"/>
+    <path d="M53 68 L62 70" stroke="${c}" stroke-width="2" stroke-linecap="round"/>
+    <path d="M43 86 Q52 93 59 88" stroke="${c}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M22 140 L26 106 L40 97 L50 101 L60 97 L74 106 L78 140Z" fill="${c}"/>
+    <line x1="40" y1="97" x2="50" y2="112" stroke="white" stroke-width="1.5" opacity=".4"/>
+    <line x1="60" y1="97" x2="50" y2="112" stroke="white" stroke-width="1.5" opacity=".4"/>
+    <path d="M40 97 Q50 108 60 97" stroke="${gd}" stroke-width="2" fill="none"/>
+    <text x="50" y="124" text-anchor="middle" dominant-baseline="central" font-size="17" fill="${gd}" font-weight="bold">${suit}</text>
+    <line x1="76" y1="58" x2="84" y2="108" stroke="${gd}" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="76,58 89,50 88,64" fill="${gd}"/>
+    <line x1="80" y1="72" x2="89" y2="68" stroke="${gd}" stroke-width="2.5" stroke-linecap="round"/>
   </svg>`;
 }
 
-// PIP_DEFS: [x, y, flip] in a 100×140 viewBox
-// flip=true rotates pip 180° around its center (bottom-half pips on real cards)
+function getJokerSVG(isBig) {
+  if (isBig) return `<svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 12 Q62 24 74 20 Q66 36 72 46 L50 50 Z" fill="#E53935"/>
+    <path d="M50 12 Q38 24 26 20 Q34 36 28 46 L50 50 Z" fill="#1565C0"/>
+    <path d="M50 50 L28 46 Q30 58 50 60 Q70 58 72 46 Z" fill="#F9A825"/>
+    <circle cx="74" cy="20" r="5" fill="#F9A825" stroke="#E65100" stroke-width="1"/>
+    <circle cx="26" cy="20" r="5" fill="#F9A825" stroke="#E65100" stroke-width="1"/>
+    <circle cx="50" cy="12" r="5" fill="#F9A825" stroke="#E65100" stroke-width="1"/>
+    <ellipse cx="50" cy="80" rx="17" ry="19" fill="#FDDCB5"/>
+    <path d="M40 70 L44 74 L40 78 L36 74 Z" fill="#E53935" opacity=".7"/>
+    <path d="M60 70 L64 74 L60 78 L56 74 Z" fill="#1565C0" opacity=".7"/>
+    <ellipse cx="42" cy="76" rx="3" ry="2.8" fill="#1A237E"/>
+    <ellipse cx="58" cy="76" rx="3" ry="2.8" fill="#1A237E"/>
+    <circle cx="43.5" cy="74.5" r="1" fill="white"/>
+    <circle cx="59.5" cy="74.5" r="1" fill="white"/>
+    <path d="M38 88 Q50 97 62 88" stroke="#B71C1C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M18 140 L22 110 L38 100 L50 104 L62 100 L78 110 L82 140Z" fill="#6A1B9A"/>
+    <text x="50" y="124" text-anchor="middle" dominant-baseline="central" font-size="14" fill="#F9A825" font-weight="bold">大王</text>
+    <text x="25" y="114" text-anchor="middle" font-size="13" fill="#F9A825">★</text>
+    <text x="75" y="114" text-anchor="middle" font-size="13" fill="#F9A825">★</text>
+  </svg>`;
+
+  return `<svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 14 Q64 24 76 20 Q67 38 72 48 L50 52 Z" fill="#37474F"/>
+    <path d="M50 14 Q36 24 24 20 Q33 38 28 48 L50 52 Z" fill="#546E7A"/>
+    <line x1="28" y1="48" x2="72" y2="48" stroke="#37474F" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="76" cy="20" r="4.5" fill="#B0BEC5" stroke="#78909C" stroke-width="1"/>
+    <circle cx="24" cy="20" r="4.5" fill="#B0BEC5" stroke="#78909C" stroke-width="1"/>
+    <ellipse cx="50" cy="80" rx="17" ry="19" fill="#FDDCB5"/>
+    <ellipse cx="43" cy="77" rx="3.5" ry="3.5" fill="#263238"/>
+    <ellipse cx="57" cy="77" rx="3.5" ry="3.5" fill="#263238"/>
+    <circle cx="44.5" cy="75.5" r="1" fill="white"/>
+    <circle cx="58.5" cy="75.5" r="1" fill="white"/>
+    <path d="M40 88 Q50 95 60 88" stroke="#546E7A" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M22 140 L26 110 L40 100 L50 104 L60 100 L74 110 L78 140Z" fill="#37474F"/>
+    <text x="50" y="124" text-anchor="middle" dominant-baseline="central" font-size="14" fill="#B0BEC5" font-weight="bold">小王</text>
+    <text x="25" y="114" text-anchor="middle" font-size="13" fill="#B0BEC5">☆</text>
+    <text x="75" y="114" text-anchor="middle" font-size="13" fill="#B0BEC5">☆</text>
+  </svg>`;
+}
+
+// PIP_DEFS: [x, y, flip] in viewBox 0 0 100 140, dominant-baseline="central"
 const PIP_DEFS = {
-  1:  { sz: 42, p: [[50,70,false]] },
-  2:  { sz: 28, p: [[50,32,false],[50,108,true]] },
-  3:  { sz: 28, p: [[50,28,false],[50,70,false],[50,112,true]] },
-  4:  { sz: 26, p: [[28,32,false],[72,32,false],[28,108,true],[72,108,true]] },
-  5:  { sz: 26, p: [[28,32,false],[72,32,false],[50,70,false],[28,108,true],[72,108,true]] },
-  6:  { sz: 24, p: [[28,28,false],[72,28,false],[28,70,false],[72,70,false],[28,112,true],[72,112,true]] },
-  7:  { sz: 22, p: [[28,26,false],[72,26,false],[50,46,false],[28,66,false],[72,66,false],[28,104,true],[72,104,true]] },
-  8:  { sz: 21, p: [[28,24,false],[72,24,false],[50,43,false],[28,62,false],[72,62,false],[50,88,true],[28,100,true],[72,100,true]] },
-  9:  { sz: 20, p: [[28,22,false],[72,22,false],[28,52,false],[72,52,false],[28,88,true],[72,88,true],[28,110,true],[72,110,true],[50,70,false]] },
-  10: { sz: 19, p: [[28,22,false],[72,22,false],[28,50,false],[72,50,false],[50,36,false],[28,90,true],[72,90,true],[28,108,true],[72,108,true],[50,104,true]] }
+  1:  { sz: 52, p: [[50,70,false]] },
+  2:  { sz: 34, p: [[50,34,false],[50,106,true]] },
+  3:  { sz: 32, p: [[50,28,false],[50,70,false],[50,112,true]] },
+  4:  { sz: 30, p: [[28,34,false],[72,34,false],[28,106,true],[72,106,true]] },
+  5:  { sz: 28, p: [[28,34,false],[72,34,false],[50,70,false],[28,106,true],[72,106,true]] },
+  6:  { sz: 26, p: [[28,28,false],[72,28,false],[28,70,false],[72,70,false],[28,112,true],[72,112,true]] },
+  7:  { sz: 24, p: [[28,26,false],[72,26,false],[50,46,false],[28,64,false],[72,64,false],[28,108,true],[72,108,true]] },
+  8:  { sz: 22, p: [[28,24,false],[72,24,false],[50,42,false],[28,60,false],[72,60,false],[50,98,true],[28,116,true],[72,116,true]] },
+  9:  { sz: 21, p: [[28,24,false],[72,24,false],[28,52,false],[72,52,false],[50,70,false],[28,88,true],[72,88,true],[28,116,true],[72,116,true]] },
+  10: { sz: 20, p: [[28,26,false],[72,26,false],[50,44,false],[28,58,false],[72,58,false],[28,82,true],[72,82,true],[50,96,true],[28,114,true],[72,114,true]] }
 };
 
 function buildCard(card, small, cw, ch) {
-  const isRed = RED_SUITS.has(card.suit);
+  const isRed = card.isJoker ? card.isBig : RED_SUITS.has(card.suit);
   const el = document.createElement('div');
   el.className = 'card ' + (isRed ? 'red' : 'black');
   if (small) {
@@ -421,28 +536,28 @@ function buildCard(card, small, cw, ch) {
   } else if (cw) {
     el.style.width = cw + 'px';
     el.style.height = ch + 'px';
-    const fs = Math.max(9, Math.round(cw * 0.115));
-    el.style.fontSize = fs + 'px';
+    el.style.fontSize = Math.max(9, Math.round(cw * 0.115)) + 'px';
     el.style.padding = Math.round(cw * 0.06) + 'px ' + Math.round(cw * 0.05) + 'px';
   }
-  el.appendChild(makeCorner(card.rank, card.suit, 'tl'));
+  el.appendChild(makeCorner(card.rank, card.isJoker ? '' : card.suit, 'tl'));
   if (!small) {
     const center = document.createElement('div');
     center.className = 'suit-center';
-    if (['J','Q','K'].includes(card.rank)) {
+    if (card.isJoker) {
+      center.innerHTML = getJokerSVG(card.isBig);
+    } else if (['J','Q','K'].includes(card.rank)) {
       center.innerHTML = getFaceCardSVG(card.rank, card.suit, isRed);
     } else {
       const n = card.rank === 'A' ? 1 : parseInt(card.rank);
       const def = PIP_DEFS[n] || PIP_DEFS[1];
-      const pips = def.p.map(([x, y, flip]) => {
-        const rot = flip ? `rotate(180,${x},${y})` : '';
-        return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${def.sz}" fill="currentColor"${rot ? ` transform="${rot}"` : ''}>${card.suit}</text>`;
-      }).join('');
+      const pips = def.p.map(([x,y,flip]) =>
+        `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${def.sz}" fill="currentColor"${flip ? ` transform="rotate(180,${x},${y})"` : ''}>${card.suit}</text>`
+      ).join('');
       center.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">${pips}</svg>`;
     }
     el.appendChild(center);
   }
-  el.appendChild(makeCorner(card.rank, card.suit, 'br'));
+  el.appendChild(makeCorner(card.rank, card.isJoker ? '' : card.suit, 'br'));
   return el;
 }
 
@@ -458,7 +573,7 @@ function renderCards(containerId, cards, mode) {
     cards.forEach(card => stage.appendChild(buildCard(card, false, CW, CH)));
   } else {
     // Fan: dynamic sizing based on container width
-    const SPREAD = 66; // total fan angle (degrees)
+    const SPREAD = 34; // total fan angle (degrees)
     const halfRad = (SPREAD / 2) * Math.PI / 180;
     const CW = Math.min(114, Math.max(68, Math.floor(W * 0.26)));
     const CH = Math.round(CW * 1.4);
@@ -541,10 +656,20 @@ function startInputPhase() {
     lbl.textContent = '第' + (i+1) + '张';
     const suitSel = document.createElement('select');
     suitSel.className = 'card-picker'; suitSel.id = 'inp-suit-' + i;
-    suitSel.innerHTML = '<option value="">花色</option>' + SUITS.map(s => `<option value="${s}">${s}</option>`).join('');
+    suitSel.innerHTML = '<option value="">花色</option>' + SUITS_ALL.map(s => `<option value="${s}">${s}</option>`).join('');
     const rankSel = document.createElement('select');
     rankSel.className = 'card-picker'; rankSel.id = 'inp-rank-' + i;
-    rankSel.innerHTML = '<option value="">点数</option>' + RANKS.map(r => `<option value="${r}">${r}</option>`).join('');
+    rankSel.innerHTML = '<option value="">点数</option>' + RANKS_ALL.map(r => `<option value="${r}">${r}</option>`).join('');
+    // Auto-set rank when joker suit is chosen
+    suitSel.addEventListener('change', () => {
+      if (suitSel.value === '★') rankSel.value = '大王';
+      else if (suitSel.value === '☆') rankSel.value = '小王';
+    });
+    // Auto-set suit when joker rank is chosen
+    rankSel.addEventListener('change', () => {
+      if (rankSel.value === '大王') suitSel.value = '★';
+      else if (rankSel.value === '小王') suitSel.value = '☆';
+    });
     g.append(lbl, suitSel, rankSel);
     container.appendChild(g);
   }
