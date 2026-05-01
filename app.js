@@ -62,6 +62,7 @@ document.getElementById('btn-back').addEventListener('click', () => {
   updateHomeStats();
 });
 document.getElementById('btn-again').addEventListener('click', startGame);
+document.getElementById('btn-refresh').addEventListener('click', startGame);
 document.getElementById('btn-home').addEventListener('click', () => {
   showScreen('screen-home');
   updateHomeStats();
