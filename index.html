@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="舒尔特Go">
+  <title>舒尔特Go</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 主页 -->
+<div id="screen-home" class="screen active">
+  <div class="home-header">
+    <h1 class="app-title">舒尔特Go</h1>
+    <p class="app-subtitle">专注力训练</p>
+  </div>
+
+  <div class="size-selector">
+    <p class="section-label">选择难度</p>
+    <div class="size-buttons">
+      <button class="size-btn" data-size="3">
+        <span class="size-num">3×3</span>
+        <span class="size-tag">入门</span>
+      </button>
+      <button class="size-btn" data-size="4">
+        <span class="size-num">4×4</span>
+        <span class="size-tag">简单</span>
+      </button>
+      <button class="size-btn active" data-size="5">
+        <span class="size-num">5×5</span>
+        <span class="size-tag">经典</span>
+      </button>
+      <button class="size-btn" data-size="6">
+        <span class="size-num">6×6</span>
+        <span class="size-tag">困难</span>
+      </button>
+      <button class="size-btn" data-size="7">
+        <span class="size-num">7×7</span>
+        <span class="size-tag">专家</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-card" id="home-stats">
+    <div class="stat-item">
+      <span class="stat-value" id="stat-best">--</span>
+      <span class="stat-label">最佳成绩</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-value" id="stat-avg">--</span>
+      <span class="stat-label">平均成绩</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-value" id="stat-count">0</span>
+      <span class="stat-label">完成次数</span>
+    </div>
+  </div>
+
+  <button class="btn-start" id="btn-start">开始训练</button>
+
+  <div class="tip-text">盯住屏幕中心，用余光找数字</div>
+</div>
+
+<!-- 游戏页 -->
+<div id="screen-game" class="screen">
+  <div class="game-header">
+    <button class="btn-back" id="btn-back">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="timer-display" id="timer-display">0.0</div>
+    <div class="game-size-label" id="game-size-label">5×5</div>
+  </div>
+
+  <div class="target-bar">
+    <span class="target-label">找</span>
+    <span class="target-number" id="target-number">1</span>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <div class="grid-wrap">
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<!-- 结果页 -->
+<div id="screen-result" class="screen">
+  <div class="result-content">
+    <div class="result-icon">🎉</div>
+    <div class="result-time" id="result-time">25.3s</div>
+    <div class="result-label">完成时间</div>
+
+    <div class="result-stats">
+      <div class="result-stat-item">
+        <span class="result-stat-val" id="result-best">--</span>
+        <span class="result-stat-lbl">最佳</span>
+      </div>
+      <div class="result-stat-item">
+        <span class="result-stat-val" id="result-rank">--</span>
+        <span class="result-stat-lbl">排名提示</span>
+      </div>
+    </div>
+
+    <button class="btn-start" id="btn-again">再来一次</button>
+    <button class="btn-outline" id="btn-home">返回主页</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
