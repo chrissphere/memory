@@ -598,7 +598,9 @@ function renderCards(containerId, cards, mode) {
     stage.style.cssText = `display:flex;flex-direction:row;justify-content:center;align-items:center;gap:8px;flex-wrap:nowrap;width:100%;height:${CH + 16}px;`;
     cards.forEach(card => stage.appendChild(buildCard(card, false, CW, CH)));
   } else {
-    // Fan: cards pivot from bottom-center; first & last rank corners are level
+    // Fan layout: all rank corners land on the same horizontal line.
+    // CSS rotate(θ): y'_topleft = sin(θ)·(-CW/2) + cos(θ)·(-CH)
+    // rank_y = pivotY − sin(θ)·CW/2 − CH·cos(θ) = C  →  topY = C + sin(θ)·CW/2 − CH·(1−cosθ)
     const SPREAD = Math.max(30, cards.length * 5);
     const CW = Math.min(114, Math.max(68, Math.floor(W * 0.26)));
     const CH = Math.round(CW * 1.4);
@@ -607,17 +609,16 @@ function renderCards(containerId, cards, mode) {
     const cx = W / 2;
     const halfRad = SPREAD / 2 * Math.PI / 180;
 
-    // topY_i = topBase - CW/2·sin(θ_i)
-    // → rank_y_i = topBase + CH·(1 - cos θ_i)  (symmetric: first == last)
-    const topBase = Math.ceil(CW / 2 * Math.sin(halfRad)) + 4;
-    const stageH = Math.round(topBase + CW * Math.sin(halfRad) + CH) + 14;
+    // C = offset so leftmost card (most negative sin, largest negative term) stays ≥ 0
+    const C = CW / 2 * Math.sin(halfRad) + CH * (1 - Math.cos(halfRad)) + 4;
+    const stageH = Math.round(1.5 * CW * Math.sin(halfRad) + CH) + 14;
 
     stage.style.cssText = `display:block;position:relative;width:100%;height:${stageH}px;overflow:visible;`;
 
     cards.forEach((card, i) => {
       const angle = -SPREAD / 2 + step * i;
       const rad = angle * Math.PI / 180;
-      const topY = topBase - CW / 2 * Math.sin(rad);
+      const topY = C + CW / 2 * Math.sin(rad) - CH * (1 - Math.cos(rad));
       const bottomX = cx + Math.sin(rad) * CW * 0.35;
       const cardEl = buildCard(card, false, CW, CH);
       cardEl.style.position = 'absolute';
