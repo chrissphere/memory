@@ -122,7 +122,7 @@
     .timer-label { font-size: 0.78rem; color: #888; text-transform: uppercase; letter-spacing: 2px; }
 
     /* Card stage */
-    .card-stage { position: relative; width: 100%; min-height: 200px; display: flex; align-items: center; justify-content: center; }
+    .card-stage { position: relative; width: 100%; display: block; }
 
     /* Playing card */
     .card {
@@ -130,13 +130,14 @@
       border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,.55), 0 2px 6px rgba(0,0,0,.3);
       display: flex; flex-direction: column; align-items: center; justify-content: space-between;
       padding: 8px 6px; font-size: 1.5rem; font-weight: 700; user-select: none; position: relative;
+      flex-shrink: 0;
     }
     .card.red { color: #e63946; }
     .card.black { color: #1a1a2e; }
-    .card .corner { position: absolute; font-size: 0.75rem; font-weight: 700; line-height: 1; display: flex; flex-direction: column; align-items: center; }
-    .card .corner.tl { top: 6px; left: 6px; }
-    .card .corner.br { bottom: 6px; right: 6px; transform: rotate(180deg); }
-    .card .suit-center { font-size: 2.2rem; display: flex; align-items: center; justify-content: center; flex-grow: 1; width: 100%; }
+    .card .corner { position: absolute; font-size: 0.72rem; font-weight: 700; line-height: 1.1; display: flex; flex-direction: column; align-items: center; }
+    .card .corner.tl { top: 5px; left: 5px; }
+    .card .corner.br { bottom: 5px; right: 5px; transform: rotate(180deg); }
+    .card .suit-center { display: flex; align-items: center; justify-content: center; flex-grow: 1; width: 100%; overflow: hidden; }
 
     /* Input */
     .input-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
@@ -193,7 +194,6 @@
     .animate-in { animation: fadeInUp .4s ease both; }
 
     @media (max-width: 500px) {
-      :root { --card-w: 60px; --card-h: 84px; }
       h1 { font-size: 1.4rem; }
       .settings-card { padding: 18px; }
       .modal { min-width: 260px; padding: 20px; }
@@ -257,7 +257,7 @@
     <div class="progress-wrap" style="max-width:300px;width:90%;">
       <div class="progress-bar" id="memo-bar" style="width:100%"></div>
     </div>
-    <div id="card-stage-memo" class="card-stage" style="min-height:220px;"></div>
+    <div id="card-stage-memo" class="card-stage"></div>
   </div>
 
   <!-- Input -->
@@ -316,7 +316,7 @@
     <div class="progress-wrap" style="width:200px">
       <div class="progress-bar" id="review-bar" style="width:100%"></div>
     </div>
-    <div id="card-stage-review" class="card-stage" style="min-height:180px;width:320px;max-width:88vw;"></div>
+    <div id="card-stage-review" class="card-stage" style="width:320px;max-width:88vw;"></div>
     <button class="btn btn-secondary" onclick="closeReview(true)">关闭</button>
   </div>
 </div>
@@ -397,34 +397,48 @@ function getFaceCardSVG(rank, suit, isRed) {
   </svg>`;
 }
 
-const PIP_POS = {
-  1:[[50,50]],2:[[50,30],[50,70]],3:[[50,25],[50,50],[50,75]],
-  4:[[28,28],[72,28],[28,72],[72,72]],5:[[28,28],[72,28],[50,50],[28,72],[72,72]],
-  6:[[28,22],[72,22],[28,50],[72,50],[28,78],[72,78]],
-  7:[[28,22],[72,22],[28,50],[72,50],[28,78],[72,78],[50,35]],
-  8:[[28,22],[72,22],[28,50],[72,50],[28,78],[72,78],[50,32],[50,68]],
-  9:[[28,20],[72,20],[28,45],[72,45],[28,72],[72,72],[50,30],[50,50],[50,70]],
-  10:[[28,20],[72,20],[28,42],[72,42],[28,68],[72,68],[50,28],[50,45],[50,58],[50,75]]
+// PIP_DEFS: [x, y, flip] in a 100×140 viewBox
+// flip=true rotates pip 180° around its center (bottom-half pips on real cards)
+const PIP_DEFS = {
+  1:  { sz: 42, p: [[50,70,false]] },
+  2:  { sz: 28, p: [[50,32,false],[50,108,true]] },
+  3:  { sz: 28, p: [[50,28,false],[50,70,false],[50,112,true]] },
+  4:  { sz: 26, p: [[28,32,false],[72,32,false],[28,108,true],[72,108,true]] },
+  5:  { sz: 26, p: [[28,32,false],[72,32,false],[50,70,false],[28,108,true],[72,108,true]] },
+  6:  { sz: 24, p: [[28,28,false],[72,28,false],[28,70,false],[72,70,false],[28,112,true],[72,112,true]] },
+  7:  { sz: 22, p: [[28,26,false],[72,26,false],[50,46,false],[28,66,false],[72,66,false],[28,104,true],[72,104,true]] },
+  8:  { sz: 21, p: [[28,24,false],[72,24,false],[50,43,false],[28,62,false],[72,62,false],[50,88,true],[28,100,true],[72,100,true]] },
+  9:  { sz: 20, p: [[28,22,false],[72,22,false],[28,52,false],[72,52,false],[28,88,true],[72,88,true],[28,110,true],[72,110,true],[50,70,false]] },
+  10: { sz: 19, p: [[28,22,false],[72,22,false],[28,50,false],[72,50,false],[50,36,false],[28,90,true],[72,90,true],[28,108,true],[72,108,true],[50,104,true]] }
 };
 
-function buildCard(card, _i, _t, _mode, small) {
+function buildCard(card, small, cw, ch) {
   const isRed = RED_SUITS.has(card.suit);
   const el = document.createElement('div');
   el.className = 'card ' + (isRed ? 'red' : 'black');
-  if (small) el.style.cssText = 'position:relative;left:auto;width:62px;height:87px;font-size:1.1rem;margin:0;';
+  if (small) {
+    el.style.cssText = 'position:relative;left:auto;width:62px;height:87px;font-size:1rem;margin:0;flex-shrink:0;';
+  } else if (cw) {
+    el.style.width = cw + 'px';
+    el.style.height = ch + 'px';
+    const fs = Math.max(9, Math.round(cw * 0.115));
+    el.style.fontSize = fs + 'px';
+    el.style.padding = Math.round(cw * 0.06) + 'px ' + Math.round(cw * 0.05) + 'px';
+  }
   el.appendChild(makeCorner(card.rank, card.suit, 'tl'));
   if (!small) {
     const center = document.createElement('div');
     center.className = 'suit-center';
-    const isFace = ['J','Q','K'].includes(card.rank);
-    if (isFace) {
+    if (['J','Q','K'].includes(card.rank)) {
       center.innerHTML = getFaceCardSVG(card.rank, card.suit, isRed);
     } else {
-      const n = parseInt(card.rank) || (card.rank === 'A' ? 1 : 0);
-      const pos = PIP_POS[n] || [];
-      center.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 100 100">${
-        pos.map(([x,y]) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="30" fill="currentColor">${card.suit}</text>`).join('')
-      }</svg>`;
+      const n = card.rank === 'A' ? 1 : parseInt(card.rank);
+      const def = PIP_DEFS[n] || PIP_DEFS[1];
+      const pips = def.p.map(([x, y, flip]) => {
+        const rot = flip ? `rotate(180,${x},${y})` : '';
+        return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${def.sz}" fill="currentColor"${rot ? ` transform="${rot}"` : ''}>${card.suit}</text>`;
+      }).join('');
+      center.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">${pips}</svg>`;
     }
     el.appendChild(center);
   }
@@ -435,20 +449,45 @@ function buildCard(card, _i, _t, _mode, small) {
 function renderCards(containerId, cards, mode) {
   const stage = document.getElementById(containerId);
   stage.innerHTML = '';
+  const W = stage.offsetWidth || (window.innerWidth - 32);
+
   if (mode === 'flat') {
-    stage.style.cssText = 'display:flex;flex-direction:row;justify-content:center;align-items:center;gap:10px;position:relative;';
-    cards.forEach((card, i) => stage.appendChild(buildCard(card, i, cards.length, mode, false)));
+    const CW = Math.min(110, Math.max(56, Math.floor((W - 40) / cards.length - 8)));
+    const CH = Math.round(CW * 1.4);
+    stage.style.cssText = `display:flex;flex-direction:row;justify-content:center;align-items:center;gap:8px;flex-wrap:nowrap;width:100%;height:${CH + 16}px;`;
+    cards.forEach(card => stage.appendChild(buildCard(card, false, CW, CH)));
   } else {
-    stage.style.cssText = 'display:flex;position:relative;justify-content:center;align-items:center;height:200px;';
-    const spread = 45, total = cards.length;
+    // Fan: dynamic sizing based on container width
+    const SPREAD = 66; // total fan angle (degrees)
+    const halfRad = (SPREAD / 2) * Math.PI / 180;
+    const CW = Math.min(114, Math.max(68, Math.floor(W * 0.26)));
+    const CH = Math.round(CW * 1.4);
+    // Radius so fan centers span ~88% of width minus one card
+    const R = Math.min(240, Math.floor((W * 0.88 - CW) / (2 * Math.sin(halfRad))));
+    const vertDrop = R * (1 - Math.cos(halfRad));
+    const stageH = Math.round(CH + vertDrop + 20);
+
+    stage.style.cssText = `display:block;position:relative;width:100%;height:${stageH}px;`;
+
+    const total = cards.length;
+    const step = total > 1 ? SPREAD / (total - 1) : 0;
+    const cx = W / 2;
+    const topY = CH / 2 + 10;
+
     cards.forEach((card, i) => {
-      const angle = -spread/2 + (total > 1 ? spread/(total-1) : 0) * i;
+      const angle = -SPREAD / 2 + step * i;
       const rad = angle * Math.PI / 180;
-      const offsetX = Math.sin(rad) * 80;
-      const offsetY = (1 - Math.cos(rad)) * 80 * 0.5;
-      const cardEl = buildCard(card, i, total, mode, false);
-      cardEl.style.cssText = `position:absolute;left:calc(50% + ${offsetX}px);top:calc(50% - ${offsetY}px);transform:translate(-50%,-50%) rotate(${angle}deg);z-index:${i};opacity:0;transition:opacity 0.3s;`;
-      setTimeout(() => { cardEl.style.opacity = '1'; }, 50 + i * 60);
+      const x = cx + Math.sin(rad) * R;
+      const y = topY + (1 - Math.cos(rad)) * R * 0.38;
+      const cardEl = buildCard(card, false, CW, CH);
+      cardEl.style.position = 'absolute';
+      cardEl.style.left = x + 'px';
+      cardEl.style.top = y + 'px';
+      cardEl.style.transform = `translate(-50%,-50%) rotate(${angle}deg)`;
+      cardEl.style.zIndex = i;
+      cardEl.style.opacity = '0';
+      cardEl.style.transition = `opacity 0.3s ease ${i * 0.07}s`;
+      setTimeout(() => { cardEl.style.opacity = '1'; }, 20);
       stage.appendChild(cardEl);
     });
   }
@@ -577,12 +616,12 @@ function showResult(correct, userCards) {
     const wrap = document.createElement('div');
     wrap.className = 'result-card-wrap';
     wrap.style.cssText = 'opacity:0;transform:translateY(16px);transition:opacity 0.4s ease ' + (i*0.1) + 's,transform 0.4s ease ' + (i*0.1) + 's;';
-    const cEl = buildCard(card, 0, 1, 'flat', true);
+    const cEl = buildCard(card, true);
     const cLab = document.createElement('div');
     cLab.className = 'result-badge badge-correct'; cLab.textContent = '正确';
     wrap.append(cEl, cLab);
     if (uc) {
-      const uEl = buildCard(uc, 0, 1, 'flat', true);
+      const uEl = buildCard(uc, true);
       uEl.style.marginTop = '6px';
       if (!isMatch) uEl.style.boxShadow = '0 0 0 2px #e94560';
       const uLab = document.createElement('div');
