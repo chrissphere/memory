@@ -598,28 +598,32 @@ function renderCards(containerId, cards, mode) {
     stage.style.cssText = `display:flex;flex-direction:row;justify-content:center;align-items:center;gap:8px;flex-wrap:nowrap;width:100%;height:${CH + 16}px;`;
     cards.forEach(card => stage.appendChild(buildCard(card, false, CW, CH)));
   } else {
-    // Fan: cards rotate from bottom-center pivot so bottoms converge naturally
-    const SPREAD = Math.max(30, cards.length * 5); // wider fan for more cards
+    // Fan: cards pivot from bottom-center; first & last rank corners are level
+    const SPREAD = Math.max(30, cards.length * 5);
     const CW = Math.min(114, Math.max(68, Math.floor(W * 0.26)));
     const CH = Math.round(CW * 1.4);
-    const stageH = CH + Math.round(CW * 0.28);
-
-    stage.style.cssText = `display:block;position:relative;width:100%;height:${stageH}px;overflow:visible;`;
-
     const total = cards.length;
     const step = total > 1 ? SPREAD / (total - 1) : 0;
     const cx = W / 2;
+    const halfRad = SPREAD / 2 * Math.PI / 180;
+
+    // topY_i = topBase - CW/2·sin(θ_i)
+    // → rank_y_i = topBase + CH·(1 - cos θ_i)  (symmetric: first == last)
+    const topBase = Math.ceil(CW / 2 * Math.sin(halfRad)) + 4;
+    const stageH = Math.round(topBase + CW * Math.sin(halfRad) + CH) + 14;
+
+    stage.style.cssText = `display:block;position:relative;width:100%;height:${stageH}px;overflow:visible;`;
 
     cards.forEach((card, i) => {
       const angle = -SPREAD / 2 + step * i;
       const rad = angle * Math.PI / 180;
-      // Tiny bottom spread — makes bottoms nearly meet, tops fan out
+      const topY = topBase - CW / 2 * Math.sin(rad);
       const bottomX = cx + Math.sin(rad) * CW * 0.35;
       const cardEl = buildCard(card, false, CW, CH);
       cardEl.style.position = 'absolute';
       cardEl.style.left = bottomX + 'px';
-      cardEl.style.bottom = '8px';
-      cardEl.style.transformOrigin = '50% 100%'; // pivot at card bottom-center
+      cardEl.style.top = topY + 'px';
+      cardEl.style.transformOrigin = '50% 100%';
       cardEl.style.transform = `translateX(-50%) rotate(${angle}deg)`;
       cardEl.style.zIndex = i;
       cardEl.style.opacity = '0';
