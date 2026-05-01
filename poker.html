@@ -598,28 +598,44 @@ function renderCards(containerId, cards, mode) {
     stage.style.cssText = `display:flex;flex-direction:row;justify-content:center;align-items:center;gap:8px;flex-wrap:nowrap;width:100%;height:${CH + 16}px;`;
     cards.forEach(card => stage.appendChild(buildCard(card, false, CW, CH)));
   } else {
-    // Fan: cards rotate from bottom-center pivot so bottoms converge naturally
-    const SPREAD = Math.max(30, cards.length * 5); // wider fan for more cards
+    // Fan: cards rotate from bottom-center pivot, rank corners aligned horizontally
+    const SPREAD = Math.max(30, cards.length * 5);
     const CW = Math.min(114, Math.max(68, Math.floor(W * 0.26)));
     const CH = Math.round(CW * 1.4);
-    const stageH = CH + Math.round(CW * 0.28);
-
-    stage.style.cssText = `display:block;position:relative;width:100%;height:${stageH}px;overflow:visible;`;
-
     const total = cards.length;
     const step = total > 1 ? SPREAD / (total - 1) : 0;
     const cx = W / 2;
 
+    // For each card rotated by θ around its bottom-center pivot at (left, top+CH):
+    //   rank-corner y = (top + CH) + CW/2·sin(θ) − CH·cos(θ)
+    // Solve top_i so all rank-corner y values are equal:
+    //   top_i = C + CH·(cos θ − 1) − CW/2·sin θ  where C = −min(f)
+    const angles = cards.map((_, i) => -SPREAD / 2 + step * i);
+    const f = angles.map(a => {
+      const r = a * Math.PI / 180;
+      return CH * (Math.cos(r) - 1) - CW / 2 * Math.sin(r);
+    });
+    const fMin = Math.min(...f);
+    const topOffsets = f.map(fi => fi - fMin); // all >= 0
+
+    // Stage height: tallest rotated card bounding box + margin
+    const stageH = Math.round(
+      Math.max(...angles.map((a, i) =>
+        topOffsets[i] + CH + CW / 2 * Math.abs(Math.sin(a * Math.PI / 180))
+      ))
+    ) + 16;
+
+    stage.style.cssText = `display:block;position:relative;width:100%;height:${stageH}px;overflow:visible;`;
+
     cards.forEach((card, i) => {
-      const angle = -SPREAD / 2 + step * i;
+      const angle = angles[i];
       const rad = angle * Math.PI / 180;
-      // Tiny bottom spread — makes bottoms nearly meet, tops fan out
       const bottomX = cx + Math.sin(rad) * CW * 0.35;
       const cardEl = buildCard(card, false, CW, CH);
       cardEl.style.position = 'absolute';
       cardEl.style.left = bottomX + 'px';
-      cardEl.style.bottom = '8px';
-      cardEl.style.transformOrigin = '50% 100%'; // pivot at card bottom-center
+      cardEl.style.top = topOffsets[i] + 'px';
+      cardEl.style.transformOrigin = '50% 100%';
       cardEl.style.transform = `translateX(-50%) rotate(${angle}deg)`;
       cardEl.style.zIndex = i;
       cardEl.style.opacity = '0';
