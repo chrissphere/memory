@@ -664,6 +664,15 @@ function startRound() {
 function reshuffleMemo() {
   currentCards = dealCards();
   renderCards('card-stage-memo', currentCards, cfg.mode);
+  // reset timer
+  clearInterval(memoIntervalId);
+  memoRemaining = memoTotal;
+  renderMemoTimer();
+  memoIntervalId = setInterval(() => {
+    memoRemaining--;
+    renderMemoTimer();
+    if (memoRemaining <= 0) { clearInterval(memoIntervalId); startInputPhase(); }
+  }, 1000);
   const btn = document.getElementById('btn-reshuffle');
   btn.style.transform = 'rotate(360deg)';
   btn.style.background = 'rgba(245,166,35,0.25)';
