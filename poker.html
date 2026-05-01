@@ -599,13 +599,15 @@ function renderCards(containerId, cards, mode) {
     stage.style.cssText = `display:flex;flex-direction:row;justify-content:center;align-items:center;gap:8px;flex-wrap:nowrap;width:100%;height:${CH + 16}px;`;
     cards.forEach(card => stage.appendChild(buildCard(card, false, CW, CH)));
   } else {
-    // True single-pivot fan: every card rotates from the exact same bottom-center point
+    // True single-pivot fan: every card rotates from the exact same bottom-left corner
     const SPREAD = Math.max(40, cards.length * 7);
     const CW = Math.min(204, Math.max(129, Math.floor(W * 0.476)));
     const CH = Math.round(CW * 1.4);
     const total = cards.length;
     const step = total > 1 ? SPREAD / (total - 1) : 0;
     const cx = W / 2;
+    const halfRad = SPREAD / 2 * Math.PI / 180;
+    const pivotX = Math.round(cx - CW * Math.cos(halfRad) / 2);
     const stageH = CH + 16;
 
     stage.style.cssText = `display:block;position:relative;width:100%;height:${stageH}px;overflow:visible;`;
@@ -614,10 +616,10 @@ function renderCards(containerId, cards, mode) {
       const angle = -SPREAD / 2 + step * i;
       const cardEl = buildCard(card, false, CW, CH);
       cardEl.style.position = 'absolute';
-      cardEl.style.left = cx + 'px';
+      cardEl.style.left = pivotX + 'px';
       cardEl.style.bottom = '0';
-      cardEl.style.transformOrigin = '50% 100%';
-      cardEl.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+      cardEl.style.transformOrigin = '0% 100%';
+      cardEl.style.transform = `rotate(${angle}deg)`;
       cardEl.style.zIndex = i;
       cardEl.style.opacity = '0';
       cardEl.style.transition = `opacity 0.3s ease ${i * 0.07}s`;
