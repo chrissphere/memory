@@ -601,7 +601,7 @@ function renderCards(containerId, cards, mode) {
   } else {
     // True single-pivot fan: every card rotates from the exact same bottom-center point
     const SPREAD = Math.max(40, cards.length * 7);
-    const CW = Math.min(120, Math.max(76, Math.floor(W * 0.28)));
+    const CW = Math.min(204, Math.max(129, Math.floor(W * 0.476)));
     const CH = Math.round(CW * 1.4);
     const total = cards.length;
     const step = total > 1 ? SPREAD / (total - 1) : 0;
