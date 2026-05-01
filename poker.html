@@ -573,12 +573,12 @@ function renderCards(containerId, cards, mode) {
     cards.forEach(card => stage.appendChild(buildCard(card, false, CW, CH)));
   } else {
     // Fan: dynamic sizing based on container width
-    const SPREAD = 34; // total fan angle (degrees)
+    const SPREAD = 20; // total fan angle (degrees)
     const halfRad = (SPREAD / 2) * Math.PI / 180;
     const CW = Math.min(114, Math.max(68, Math.floor(W * 0.26)));
     const CH = Math.round(CW * 1.4);
     // Radius so fan centers span ~88% of width minus one card
-    const R = Math.min(240, Math.floor((W * 0.88 - CW) / (2 * Math.sin(halfRad))));
+    const R = Math.min(340, Math.floor((W * 0.88 - CW) / (2 * Math.sin(halfRad))));
     const vertDrop = R * (1 - Math.cos(halfRad));
     const stageH = Math.round(CH + vertDrop + 20);
 
@@ -593,7 +593,7 @@ function renderCards(containerId, cards, mode) {
       const angle = -SPREAD / 2 + step * i;
       const rad = angle * Math.PI / 180;
       const x = cx + Math.sin(rad) * R;
-      const y = topY + (1 - Math.cos(rad)) * R * 0.38;
+      const y = topY + (1 - Math.cos(rad)) * R * 0.18;
       const cardEl = buildCard(card, false, CW, CH);
       cardEl.style.position = 'absolute';
       cardEl.style.left = x + 'px';
