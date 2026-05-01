@@ -264,7 +264,7 @@
   </div>
 
   <!-- Memorize -->
-  <div id="phase-memorize" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:16px;">
+  <div id="phase-memorize" style="width:100%;flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:16px;">
     <div class="phase-label">记忆阶段</div>
     <div class="timer-label">剩余时间</div>
     <div class="timer-display" id="memo-timer">10</div>
@@ -273,7 +273,7 @@
     </div>
     <div id="card-stage-memo" class="card-stage"></div>
     <button onclick="reshuffleMemo()" style="
-      margin-top:4px;width:48px;height:48px;border-radius:50%;
+      margin-top:auto;margin-bottom:24px;width:48px;height:48px;border-radius:50%;
       background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
       color:rgba(255,255,255,0.7);cursor:pointer;display:flex;align-items:center;
       justify-content:center;transition:transform 0.25s ease,background 0.15s;
@@ -594,19 +594,21 @@ function renderCards(containerId, cards, mode) {
   const W = stage.offsetWidth || (window.innerWidth - 32);
 
   if (mode === 'flat') {
-    const CW = Math.min(110, Math.max(56, Math.floor((W - 40) / cards.length - 8)));
+    const cols = cards.length > 5 ? Math.ceil(cards.length / 2) : cards.length;
+    const CW = Math.min(110, Math.max(56, Math.floor((W - 16) / cols - 8)));
     const CH = Math.round(CW * 1.4);
-    stage.style.cssText = `display:flex;flex-direction:row;justify-content:center;align-items:center;gap:8px;flex-wrap:nowrap;width:100%;height:${CH + 16}px;`;
+    stage.style.cssText = `display:flex;flex-direction:row;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;width:100%;`;
     cards.forEach(card => stage.appendChild(buildCard(card, false, CW, CH)));
   } else {
-    // True single-pivot fan: every card rotates from the exact same bottom-left corner
+    // True single-pivot fan: every card rotates from the exact same bottom-left 20% point
     const SPREAD = Math.max(40, cards.length * 7);
-    const CW = Math.min(204, Math.max(129, Math.floor(W * 0.476)));
+    const halfRad = SPREAD / 2 * Math.PI / 180;
+    const maxCWByFit = Math.floor((W - 16) / (Math.cos(halfRad) + 2.8 * Math.sin(halfRad)));
+    const CW = Math.min(204, Math.max(80, Math.min(maxCWByFit, Math.floor(W * 0.476))));
     const CH = Math.round(CW * 1.4);
     const total = cards.length;
     const step = total > 1 ? SPREAD / (total - 1) : 0;
     const cx = W / 2;
-    const halfRad = SPREAD / 2 * Math.PI / 180;
     const pivotX = Math.round(cx - CW * (0.2 + 0.3 * Math.cos(halfRad)));
     const stageH = CH + 16;
 
