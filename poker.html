@@ -583,33 +583,29 @@ function renderCards(containerId, cards, mode) {
     stage.style.cssText = `display:flex;flex-direction:row;justify-content:center;align-items:center;gap:8px;flex-wrap:nowrap;width:100%;height:${CH + 16}px;`;
     cards.forEach(card => stage.appendChild(buildCard(card, false, CW, CH)));
   } else {
-    // Fan: dynamic sizing based on container width
-    const SPREAD = 20; // total fan angle (degrees)
-    const halfRad = (SPREAD / 2) * Math.PI / 180;
+    // Fan: cards rotate from bottom-center pivot so bottoms converge naturally
+    const SPREAD = 30; // total fan angle
     const CW = Math.min(114, Math.max(68, Math.floor(W * 0.26)));
     const CH = Math.round(CW * 1.4);
-    // Radius so fan centers span ~88% of width minus one card
-    const R = Math.min(340, Math.floor((W * 0.88 - CW) / (2 * Math.sin(halfRad))));
-    const vertDrop = R * (1 - Math.cos(halfRad));
-    const stageH = Math.round(CH + vertDrop + 20);
+    const stageH = CH + Math.round(CW * 0.28);
 
-    stage.style.cssText = `display:block;position:relative;width:100%;height:${stageH}px;`;
+    stage.style.cssText = `display:block;position:relative;width:100%;height:${stageH}px;overflow:visible;`;
 
     const total = cards.length;
     const step = total > 1 ? SPREAD / (total - 1) : 0;
     const cx = W / 2;
-    const topY = CH / 2 + 10;
 
     cards.forEach((card, i) => {
       const angle = -SPREAD / 2 + step * i;
       const rad = angle * Math.PI / 180;
-      const x = cx + Math.sin(rad) * R;
-      const y = topY + (1 - Math.cos(rad)) * R * 0.18;
+      // Tiny bottom spread — makes bottoms nearly meet, tops fan out
+      const bottomX = cx + Math.sin(rad) * CW * 0.35;
       const cardEl = buildCard(card, false, CW, CH);
       cardEl.style.position = 'absolute';
-      cardEl.style.left = x + 'px';
-      cardEl.style.top = y + 'px';
-      cardEl.style.transform = `translate(-50%,-50%) rotate(${angle}deg)`;
+      cardEl.style.left = bottomX + 'px';
+      cardEl.style.bottom = '8px';
+      cardEl.style.transformOrigin = '50% 100%'; // pivot at card bottom-center
+      cardEl.style.transform = `translateX(-50%) rotate(${angle}deg)`;
       cardEl.style.zIndex = i;
       cardEl.style.opacity = '0';
       cardEl.style.transition = `opacity 0.3s ease ${i * 0.07}s`;
