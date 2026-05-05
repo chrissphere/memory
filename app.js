@@ -133,7 +133,6 @@ function buildGrid() {
     cell.textContent = num;
     cell.dataset.num = num;
     cell.style.fontSize = fontSize;
-    cell.style.animationDelay = `${idx * 12}ms`;
     cell.addEventListener('click', () => handleCellClick(cell, num));
     grid.appendChild(cell);
   });
