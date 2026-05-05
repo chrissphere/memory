@@ -4,6 +4,8 @@ const DIFFICULTY = {
 
 let gridSize = 5;
 let zoneEnabled = false;
+let zoneDeep = false;
+let startNum = 1;
 let currentTarget = 1;
 let totalCells = 25;
 let timerInterval = null;
@@ -113,8 +115,10 @@ function getZoneClass(idx) {
 function buildGrid() {
   const grid = document.getElementById('grid');
   grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+  if (zoneEnabled && zoneDeep) grid.classList.add('zone-deep');
+  else grid.classList.remove('zone-deep');
 
-  const numbers = shuffle([...Array(totalCells).keys()].map(i => i + 1));
+  const numbers = shuffle([...Array(totalCells).keys()].map(i => i + startNum));
   grid.innerHTML = '';
 
   const fontSize = gridSize <= 4 ? '24px' : gridSize === 5 ? '20px' : gridSize === 6 ? '17px' : '14px';
@@ -145,7 +149,7 @@ function handleCellClick(cell, num) {
 
     updateProgress();
 
-    if (currentTarget > totalCells) {
+    if (currentTarget > startNum + totalCells - 1) {
       finishGame();
     }
   } else {
@@ -155,7 +159,7 @@ function handleCellClick(cell, num) {
 }
 
 function updateProgress() {
-  const pct = ((currentTarget - 1) / totalCells) * 100;
+  const pct = ((currentTarget - startNum) / totalCells) * 100;
   document.getElementById('progress-bar').style.width = pct + '%';
 }
 
@@ -175,7 +179,7 @@ function stopTimer() {
 
 function startGame() {
   totalCells = gridSize * gridSize;
-  currentTarget = 1;
+  currentTarget = startNum;
   gameActive = true;
   elapsed = 0;
 
@@ -218,6 +222,8 @@ function finishGame() {
   const p = loadPrefs();
   gridSize = p.size || 5;
   zoneEnabled = p.zone || false;
+  zoneDeep = p.zoneDeep || false;
+  startNum = p.startNum || 1;
 
   const sizeBtn = document.querySelector(`.size-btn[data-size="${gridSize}"]`);
   if (sizeBtn) sizeBtn.classList.add('active');
@@ -227,6 +233,21 @@ function finishGame() {
   toggle.addEventListener('change', () => {
     zoneEnabled = toggle.checked;
     savePrefs({ zone: zoneEnabled });
+  });
+
+  const toggleDeep = document.getElementById('toggle-zone-deep');
+  toggleDeep.checked = zoneDeep;
+  toggleDeep.addEventListener('change', () => {
+    zoneDeep = toggleDeep.checked;
+    savePrefs({ zoneDeep });
+  });
+
+  const inputStart = document.getElementById('input-start-num');
+  inputStart.value = startNum;
+  inputStart.addEventListener('change', () => {
+    startNum = Math.max(1, parseInt(inputStart.value) || 1);
+    inputStart.value = startNum;
+    savePrefs({ startNum });
   });
 })();
 
