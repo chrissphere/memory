@@ -73,6 +73,22 @@
     <input type="number" id="input-start-num" class="num-input" min="1" max="9999" value="1">
   </div>
 
+  <div class="setting-row">
+    <span class="setting-label">逐格延迟</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="toggle-stagger">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+
+  <div class="setting-row" id="row-stagger-delay" style="display:none;">
+    <span class="setting-label">延迟间隔</span>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <input type="number" id="input-stagger-delay" class="num-input" min="12" max="240" step="12" value="12">
+      <span style="font-size:13px;color:var(--text-secondary);">ms</span>
+    </div>
+  </div>
+
   <div class="stats-card" id="home-stats">
     <div class="stat-item">
       <span class="stat-value" id="stat-best">--</span>

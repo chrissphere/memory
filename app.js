@@ -6,6 +6,8 @@ let gridSize = 5;
 let zoneEnabled = false;
 let zoneDeep = false;
 let startNum = 1;
+let staggerEnabled = false;
+let staggerDelay = 12;
 let currentTarget = 1;
 let totalCells = 25;
 let timerInterval = null;
@@ -133,6 +135,7 @@ function buildGrid() {
     cell.textContent = num;
     cell.dataset.num = num;
     cell.style.fontSize = fontSize;
+    if (staggerEnabled) cell.style.animationDelay = `${idx * staggerDelay}ms`;
     cell.addEventListener('click', () => handleCellClick(cell, num));
     grid.appendChild(cell);
   });
@@ -223,6 +226,8 @@ function finishGame() {
   zoneEnabled = p.zone || false;
   zoneDeep = p.zoneDeep || false;
   startNum = p.startNum || 1;
+  staggerEnabled = p.stagger || false;
+  staggerDelay = p.staggerDelay || 12;
 
   const sizeBtn = document.querySelector(`.size-btn[data-size="${gridSize}"]`);
   if (sizeBtn) sizeBtn.classList.add('active');
@@ -247,6 +252,28 @@ function finishGame() {
     startNum = Math.max(1, parseInt(inputStart.value) || 1);
     inputStart.value = startNum;
     savePrefs({ startNum });
+  });
+
+  const toggleStagger = document.getElementById('toggle-stagger');
+  const rowStaggerDelay = document.getElementById('row-stagger-delay');
+  const inputStaggerDelay = document.getElementById('input-stagger-delay');
+
+  toggleStagger.checked = staggerEnabled;
+  rowStaggerDelay.style.display = staggerEnabled ? 'flex' : 'none';
+  inputStaggerDelay.value = staggerDelay;
+
+  toggleStagger.addEventListener('change', () => {
+    staggerEnabled = toggleStagger.checked;
+    rowStaggerDelay.style.display = staggerEnabled ? 'flex' : 'none';
+    savePrefs({ stagger: staggerEnabled });
+  });
+
+  inputStaggerDelay.addEventListener('change', () => {
+    const v = parseInt(inputStaggerDelay.value) || 12;
+    staggerDelay = Math.round(v / 12) * 12;
+    staggerDelay = Math.max(12, Math.min(240, staggerDelay));
+    inputStaggerDelay.value = staggerDelay;
+    savePrefs({ staggerDelay });
   });
 })();
 
