@@ -177,6 +177,7 @@ function setAutoShuffle(on) {
 }
 
 
+function handleCellClick(cell, num) {
   if (!gameActive) return;
 
   if (num === currentTarget) {
