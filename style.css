@@ -657,48 +657,56 @@ html, body {
 
 /* ── Landscape ───────────────────────────────────────────── */
 @media (orientation: landscape) {
-  /* Game screen: CSS grid with controls on left, grid on right */
+  /* Game screen: 3-column grid — left controls | grid | right controls */
   #screen-game {
     display: grid;
-    grid-template-columns: 80px 1fr;
+    grid-template-columns: 72px 1fr 56px;
     grid-template-rows: auto auto 1fr;
-    column-gap: 12px;
+    column-gap: 10px;
     overflow: hidden;
-    padding: max(env(safe-area-inset-top,0px),8px)
-             max(env(safe-area-inset-right,0px),12px)
-             max(env(safe-area-inset-bottom,0px),8px)
-             max(env(safe-area-inset-left,0px),12px);
+    padding: max(env(safe-area-inset-top,0px),6px)
+             max(env(safe-area-inset-right,0px),10px)
+             max(env(safe-area-inset-bottom,0px),6px)
+             max(env(safe-area-inset-left,0px),10px);
   }
 
+  /* Left col: back + timer + size label */
   .game-header {
     grid-column: 1; grid-row: 1;
     flex-direction: column;
-    width: 80px; max-width: 80px;
+    width: 72px; max-width: 72px;
     padding-top: 0; margin-bottom: 0;
     justify-content: flex-start;
     align-items: center;
     gap: 6px;
   }
 
+  /* Left col: progress bar */
   .progress-bar-wrap {
     grid-column: 1; grid-row: 2;
-    width: 80px; max-width: 80px;
-    margin-bottom: 0; margin-top: 8px;
+    width: 64px; max-width: 64px;
+    margin-bottom: 0; margin-top: 6px;
+    justify-self: center;
   }
 
+  /* Center: the grid itself */
   .grid-wrap {
     grid-column: 2; grid-row: 1 / 4;
-    max-width: calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 16px);
+    max-width: calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 12px);
     justify-self: center;
     align-self: center;
   }
 
+  /* Right col: auto-shuffle at top, refresh pinned to bottom */
   .game-bottom {
-    grid-column: 1; grid-row: 3;
-    width: 80px; max-width: 80px;
-    justify-content: flex-end;
+    grid-column: 3; grid-row: 1 / 4;
+    width: 56px; max-width: 56px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 4px;
     padding-bottom: 4px;
-    gap: 4px;
+    gap: 6px;
   }
 
   #shuffle-speed-row {
@@ -708,7 +716,9 @@ html, body {
     align-items: center;
   }
 
-  .speed-slider { width: 76px; }
+  .speed-slider { width: 52px; }
+
+  #btn-refresh { margin-top: auto; }
 
   .btn-refresh { width: 44px; height: 44px; margin-top: 0; margin-bottom: 0; }
   .btn-refresh:last-child { margin-bottom: 0; }
