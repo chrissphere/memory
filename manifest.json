@@ -4,7 +4,7 @@
   "description": "专注力与记忆力训练 — 舒尔特方格 · 扑克记忆",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#0f0c29",
   "theme_color": "#1a1f5e",
   "icons": [
