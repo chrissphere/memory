@@ -427,6 +427,12 @@ html, body {
   display: grid;
   width: 100%;
   gap: 6px;
+  transition: transform 0.3s ease;
+  transform-origin: center center;
+}
+
+.grid.rotated {
+  transform: rotate(90deg);
 }
 
 .cell {

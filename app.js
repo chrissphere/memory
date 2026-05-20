@@ -11,6 +11,7 @@ let staggerDelay = 12;
 let autoShuffleEnabled = false;
 let autoShuffleTimer = null;
 let shuffleIntervalMs = 2000;
+let rotateEnabled = false;
 let currentTarget = 1;
 let totalCells = 25;
 let timerInterval = null;
@@ -124,6 +125,7 @@ function buildGrid() {
   grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
   if (zoneEnabled && zoneDeep) grid.classList.add('zone-deep');
   else grid.classList.remove('zone-deep');
+  grid.classList.toggle('rotated', rotateEnabled);
 
   const numbers = shuffle([...Array(totalCells).keys()].map(i => i + startNum));
   grid.innerHTML = '';
@@ -174,6 +176,13 @@ function setAutoShuffle(on) {
   row.style.display = on ? 'flex' : 'none';
   if (on && gameActive) startAutoShuffle();
   else stopAutoShuffle();
+}
+
+function setRotate(on) {
+  rotateEnabled = on;
+  document.getElementById('btn-rotate').classList.toggle('active', on);
+  document.getElementById('grid').classList.toggle('rotated', on);
+  savePrefs({ rotate: on });
 }
 
 
@@ -329,6 +338,10 @@ function finishGame() {
   document.getElementById('btn-auto-shuffle').addEventListener('click', () => {
     setAutoShuffle(!autoShuffleEnabled);
   });
+
+  rotateEnabled = p.rotate || false;
+  if (rotateEnabled) document.getElementById('btn-rotate').classList.add('active');
+  document.getElementById('btn-rotate').addEventListener('click', () => setRotate(!rotateEnabled));
 })();
 
 updateHomeStats();
