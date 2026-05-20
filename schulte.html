@@ -130,28 +130,26 @@
     <div class="grid" id="grid"></div>
   </div>
 
-  <div class="game-bottom">
-    <div id="shuffle-speed-row" style="display:none;align-items:center;gap:10px;margin-bottom:8px;">
-      <input type="range" id="shuffle-speed" class="speed-slider" min="0.5" max="3" step="0.5" value="2">
-      <span id="shuffle-speed-label" class="speed-label">2s</span>
-    </div>
-
-    <button class="btn-refresh" id="btn-auto-shuffle" title="自动洗牌">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <polyline points="16 3 21 3 21 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="4" y1="20" x2="21" y2="3" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-        <polyline points="21 16 21 21 16 21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="15" y1="15" x2="4" y2="4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-    </button>
-
-    <button class="btn-refresh" id="btn-refresh" title="重新开始">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <path d="M1 4v6h6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M3.51 15a9 9 0 1 0 .49-4.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
+  <div id="shuffle-speed-row" style="display:none;align-items:center;gap:10px;margin-bottom:8px;">
+    <input type="range" id="shuffle-speed" class="speed-slider" min="0.5" max="3" step="0.5" value="2">
+    <span id="shuffle-speed-label" class="speed-label">2s</span>
   </div>
+
+  <button class="btn-refresh" id="btn-auto-shuffle" title="自动洗牌">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <polyline points="16 3 21 3 21 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="4" y1="20" x2="21" y2="3" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <polyline points="21 16 21 21 16 21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="15" y1="15" x2="4" y2="4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <button class="btn-refresh" id="btn-refresh" title="重新开始">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M1 4v6h6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M3.51 15a9 9 0 1 0 .49-4.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 </div>
 
 <!-- 结果页 -->
