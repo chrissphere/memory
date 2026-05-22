@@ -126,6 +126,7 @@ function buildGrid() {
   if (zoneEnabled && zoneDeep) grid.classList.add('zone-deep');
   else grid.classList.remove('zone-deep');
   grid.classList.toggle('rotated', rotateEnabled);
+  applyRotation();
 
   const numbers = shuffle([...Array(totalCells).keys()].map(i => i + startNum));
   grid.innerHTML = '';
@@ -178,10 +179,25 @@ function setAutoShuffle(on) {
   else stopAutoShuffle();
 }
 
+function getRotateDeg() {
+  if (typeof window.orientation === 'number') return -window.orientation;
+  if (screen.orientation) {
+    const a = screen.orientation.angle;
+    return a === 270 ? 90 : a === 90 ? -90 : 0;
+  }
+  return 0;
+}
+
+function applyRotation() {
+  const grid = document.getElementById('grid');
+  if (!grid) return;
+  grid.style.transform = rotateEnabled ? `rotate(${getRotateDeg()}deg)` : '';
+}
+
 function setRotate(on) {
   rotateEnabled = on;
   document.getElementById('btn-rotate').classList.toggle('active', on);
-  document.getElementById('grid').classList.toggle('rotated', on);
+  applyRotation();
   savePrefs({ rotate: on });
 }
 
@@ -342,6 +358,9 @@ function finishGame() {
   rotateEnabled = p.rotate || false;
   if (rotateEnabled) document.getElementById('btn-rotate').classList.add('active');
   document.getElementById('btn-rotate').addEventListener('click', () => setRotate(!rotateEnabled));
+
+  window.addEventListener('orientationchange', () => setTimeout(applyRotation, 50));
+  if (screen.orientation) screen.orientation.addEventListener('change', applyRotation);
 })();
 
 updateHomeStats();
