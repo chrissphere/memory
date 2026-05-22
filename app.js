@@ -126,7 +126,6 @@ function buildGrid() {
   if (zoneEnabled && zoneDeep) grid.classList.add('zone-deep');
   else grid.classList.remove('zone-deep');
   grid.classList.toggle('rotated', rotateEnabled);
-  applyRotation();
 
   const numbers = shuffle([...Array(totalCells).keys()].map(i => i + startNum));
   grid.innerHTML = '';
@@ -179,25 +178,55 @@ function setAutoShuffle(on) {
   else stopAutoShuffle();
 }
 
-function getRotateDeg() {
-  if (typeof window.orientation === 'number') return -window.orientation;
-  if (screen.orientation) {
-    const a = screen.orientation.angle;
-    return a === 270 ? 90 : a === 90 ? -90 : 0;
-  }
-  return 0;
+let gyroListener = null;
+let lastRotateDeg = 0;
+
+function onDeviceOrientation(e) {
+  if (!rotateEnabled) return;
+  const gamma = e.gamma || 0;
+  const deg = gamma < -45 ? 90 : gamma > 45 ? -90 : 0;
+  if (deg === lastRotateDeg) return;
+  lastRotateDeg = deg;
+  const grid = document.getElementById('grid');
+  if (grid) grid.style.transform = `rotate(${deg}deg)`;
 }
 
-function applyRotation() {
-  const grid = document.getElementById('grid');
-  if (!grid) return;
-  grid.style.transform = rotateEnabled ? `rotate(${getRotateDeg()}deg)` : '';
+function startGyro(fromGesture) {
+  if (gyroListener) return;
+  function attach() {
+    gyroListener = onDeviceOrientation;
+    window.addEventListener('deviceorientation', gyroListener);
+  }
+  if (typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
+    if (fromGesture) {
+      DeviceOrientationEvent.requestPermission()
+        .then(s => { if (s === 'granted') attach(); })
+        .catch(() => {});
+    }
+  } else {
+    attach();
+  }
+}
+
+function stopGyro() {
+  if (gyroListener) {
+    window.removeEventListener('deviceorientation', gyroListener);
+    gyroListener = null;
+  }
+  lastRotateDeg = 0;
 }
 
 function setRotate(on) {
   rotateEnabled = on;
   document.getElementById('btn-rotate').classList.toggle('active', on);
-  applyRotation();
+  if (on) {
+    startGyro(true);
+  } else {
+    stopGyro();
+    const grid = document.getElementById('grid');
+    if (grid) grid.style.transform = '';
+  }
   savePrefs({ rotate: on });
 }
 
@@ -356,11 +385,11 @@ function finishGame() {
   });
 
   rotateEnabled = p.rotate || false;
-  if (rotateEnabled) document.getElementById('btn-rotate').classList.add('active');
+  if (rotateEnabled) {
+    document.getElementById('btn-rotate').classList.add('active');
+    startGyro(false);
+  }
   document.getElementById('btn-rotate').addEventListener('click', () => setRotate(!rotateEnabled));
-
-  window.addEventListener('orientationchange', () => setTimeout(applyRotation, 50));
-  if (screen.orientation) screen.orientation.addEventListener('change', applyRotation);
 })();
 
 updateHomeStats();
