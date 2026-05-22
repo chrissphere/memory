@@ -220,6 +220,7 @@ function stopGyro() {
 function setRotate(on) {
   rotateEnabled = on;
   document.getElementById('btn-rotate').classList.toggle('active', on);
+  document.body.classList.toggle('rotate-mode', on);
   if (on) {
     startGyro(true);
   } else {
@@ -387,6 +388,7 @@ function finishGame() {
   rotateEnabled = p.rotate || false;
   if (rotateEnabled) {
     document.getElementById('btn-rotate').classList.add('active');
+    document.body.classList.add('rotate-mode');
     startGyro(false);
   }
   document.getElementById('btn-rotate').addEventListener('click', () => setRotate(!rotateEnabled));

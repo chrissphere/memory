@@ -647,3 +647,24 @@ html, body {
   .grid.zone-deep .cell.zone-bl { background-color: rgba(34,197,94,0.42); }
   .grid.zone-deep .cell.zone-br { background-color: rgba(139,92,246,0.42); }
 }
+
+/* ── Landscape overlay ───────────────────────────────────── */
+#rotate-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  pointer-events: none;
+}
+
+@media (orientation: landscape) {
+  #rotate-overlay { display: flex; }
+  body.rotate-mode #rotate-overlay { display: none; }
+}
