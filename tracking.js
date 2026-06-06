@@ -201,8 +201,8 @@ function startGame() {
   canvas.onclick = null;
   canvas.addEventListener('click', handleCanvasClick);
 
-  document.getElementById('btn-launch').style.display = 'none';
-  document.getElementById('btn-confirm').style.display = 'none';
+  document.getElementById('btn-launch').style.visibility = 'hidden';
+  document.getElementById('btn-confirm').style.visibility = 'hidden';
   document.getElementById('btn-confirm').disabled = true;
   document.getElementById('countdown').textContent = '';
 
@@ -214,7 +214,7 @@ function startMarking(canvas) {
   phase = 'marking';
   document.getElementById('phase-label').textContent = `记住 ${numTargets} 个橙色目标球`;
   drawFrame(canvas);
-  document.getElementById('btn-launch').style.display = 'block';
+  document.getElementById('btn-launch').style.visibility = 'visible';
 }
 
 function startTracking(canvas) {
@@ -243,7 +243,7 @@ function startGuessing(canvas) {
   trackingMs = Date.now() - trackingStart;
   phase = 'guessing';
   document.getElementById('phase-label').textContent = `点选 ${numTargets} 个目标球`;
-  document.getElementById('btn-confirm').style.display = 'block';
+  document.getElementById('btn-confirm').style.visibility = 'visible';
   document.getElementById('btn-confirm').disabled = true;
   drawFrame(canvas);
 }
@@ -407,7 +407,7 @@ function drawHistoryChart(canvas, records) {
   });
 
   document.getElementById('btn-launch').addEventListener('click', () => {
-    document.getElementById('btn-launch').style.display = 'none';
+    document.getElementById('btn-launch').style.visibility = 'hidden';
     startTracking(document.getElementById('game-canvas'));
   });
 
