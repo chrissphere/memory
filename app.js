@@ -12,6 +12,7 @@ let autoShuffleEnabled = false;
 let autoShuffleTimer = null;
 let shuffleIntervalMs = 2000;
 let rotateEnabled = false;
+let colorEnabled = false;
 let currentTarget = 1;
 let totalCells = 25;
 let timerInterval = null;
@@ -93,6 +94,16 @@ document.getElementById('btn-home').addEventListener('click', () => {
 });
 
 // ── Game ──────────────────────────────────────────────────
+function randomCellColor() {
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const h = Math.floor(Math.random() * 360);
+  const s = Math.floor(Math.random() * 51) + 50;
+  const l = dark
+    ? Math.floor(Math.random() * 31) + 45
+    : Math.floor(Math.random() * 36) + 20;
+  return `hsl(${h},${s}%,${l}%)`;
+}
+
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -142,6 +153,7 @@ function buildGrid() {
     cell.textContent = num;
     cell.dataset.num = num;
     cell.style.fontSize = fontSize;
+    if (colorEnabled) cell.style.color = randomCellColor();
     if (staggerEnabled) cell.style.animationDelay = `${idx * staggerDelay}ms`;
     cell.addEventListener('click', () => handleCellClick(cell, parseInt(cell.dataset.num)));
     grid.appendChild(cell);
@@ -383,6 +395,14 @@ function finishGame() {
 
   document.getElementById('btn-auto-shuffle').addEventListener('click', () => {
     setAutoShuffle(!autoShuffleEnabled);
+  });
+
+  colorEnabled = p.color || false;
+  const toggleColor = document.getElementById('toggle-color');
+  toggleColor.checked = colorEnabled;
+  toggleColor.addEventListener('change', () => {
+    colorEnabled = toggleColor.checked;
+    savePrefs({ color: colorEnabled });
   });
 
   rotateEnabled = p.rotate || false;
