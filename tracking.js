@@ -411,6 +411,7 @@ function drawHistoryChart(canvas, records) {
     startTracking(document.getElementById('game-canvas'));
   });
 
+  document.getElementById('btn-reset').addEventListener('click', startGame);
   document.getElementById('btn-start').addEventListener('click', startGame);
   document.getElementById('btn-back').addEventListener('click', () => {
     stopAll();
