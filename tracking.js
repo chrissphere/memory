@@ -244,6 +244,7 @@ function startGuessing(canvas) {
   trackingMs = Date.now() - trackingStart;
   phase = 'guessing';
   document.getElementById('phase-label').textContent = `点选 ${numTargets} 个目标球`;
+  document.getElementById('btn-reset').style.display = 'none';
   document.getElementById('btn-confirm').style.display = 'block';
   document.getElementById('btn-confirm').disabled = true;
   drawFrame(canvas);
