@@ -13,6 +13,7 @@ let autoShuffleTimer = null;
 let shuffleIntervalMs = 2000;
 let rotateEnabled = false;
 let colorEnabled = false;
+let darkForced = false;
 let currentTarget = 1;
 let totalCells = 25;
 let timerInterval = null;
@@ -94,6 +95,11 @@ document.getElementById('btn-home').addEventListener('click', () => {
 });
 
 // ── Game ──────────────────────────────────────────────────
+function applyTheme(forced) {
+  document.body.classList.toggle('theme-dark', forced === true);
+  document.body.classList.toggle('theme-light', forced === false);
+}
+
 function randomCellColor() {
   const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const h = Math.floor(Math.random() * 360);
@@ -395,6 +401,16 @@ function finishGame() {
 
   document.getElementById('btn-auto-shuffle').addEventListener('click', () => {
     setAutoShuffle(!autoShuffleEnabled);
+  });
+
+  darkForced = p.darkForced || false;
+  applyTheme(darkForced ? true : null);
+  const toggleTheme = document.getElementById('toggle-theme');
+  toggleTheme.checked = !!darkForced;
+  toggleTheme.addEventListener('change', () => {
+    darkForced = toggleTheme.checked;
+    applyTheme(darkForced ? true : null);
+    savePrefs({ darkForced });
   });
 
   colorEnabled = p.color || false;
