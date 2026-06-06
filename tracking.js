@@ -18,6 +18,7 @@ let animFrameId = null;
 let countdownTimer = null;
 let trackingStart = 0;
 let trackingMs = 0;
+let darkForced = false;
 
 // ── Prefs ──────────────────────────────────────────────────
 function loadPrefs() {
@@ -66,6 +67,11 @@ function updateHomeStats() {
 }
 
 // ── Utility ────────────────────────────────────────────────
+function applyTheme(forced) {
+  document.body.classList.toggle('theme-dark', forced === true);
+  document.body.classList.toggle('theme-light', forced === false);
+}
+
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -351,6 +357,16 @@ function drawHistoryChart(canvas, records) {
   numTargets = p.targets  || 3;
   speed      = p.speed    || 'medium';
   duration   = p.duration || 5;
+
+  darkForced = p.darkForced || false;
+  applyTheme(darkForced ? true : null);
+  const toggleTheme = document.getElementById('toggle-theme');
+  toggleTheme.checked = !!darkForced;
+  toggleTheme.addEventListener('change', () => {
+    darkForced = toggleTheme.checked;
+    applyTheme(darkForced ? true : null);
+    savePrefs({ darkForced });
+  });
 
   const inputBalls = document.getElementById('input-balls');
   inputBalls.value = numBalls;
