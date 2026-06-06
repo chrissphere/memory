@@ -201,6 +201,7 @@ function startGame() {
   canvas.onclick = null;
   canvas.addEventListener('click', handleCanvasClick);
 
+  document.getElementById('btn-launch').style.display = 'none';
   document.getElementById('btn-confirm').style.display = 'none';
   document.getElementById('btn-confirm').disabled = true;
   document.getElementById('countdown').textContent = '';
@@ -213,7 +214,7 @@ function startMarking(canvas) {
   phase = 'marking';
   document.getElementById('phase-label').textContent = `记住 ${numTargets} 个橙色目标球`;
   drawFrame(canvas);
-  setTimeout(() => startTracking(canvas), 2000);
+  document.getElementById('btn-launch').style.display = 'block';
 }
 
 function startTracking(canvas) {
@@ -371,7 +372,7 @@ function drawHistoryChart(canvas, records) {
   const inputBalls = document.getElementById('input-balls');
   inputBalls.value = numBalls;
   inputBalls.addEventListener('change', () => {
-    numBalls = Math.max(4, Math.min(12, parseInt(inputBalls.value) || 8));
+    numBalls = Math.max(4, Math.min(20, parseInt(inputBalls.value) || 8));
     numTargets = Math.min(numTargets, Math.floor(numBalls / 2));
     document.getElementById('input-targets').value = numTargets;
     inputBalls.value = numBalls;
@@ -403,6 +404,11 @@ function drawHistoryChart(canvas, records) {
       btn.classList.add('active');
       savePrefs({ speed });
     });
+  });
+
+  document.getElementById('btn-launch').addEventListener('click', () => {
+    document.getElementById('btn-launch').style.display = 'none';
+    startTracking(document.getElementById('game-canvas'));
   });
 
   document.getElementById('btn-start').addEventListener('click', startGame);
