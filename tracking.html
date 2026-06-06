@@ -130,7 +130,7 @@
 
   <div class="setting-row">
     <span class="setting-label">总球数</span>
-    <input type="number" id="input-balls" class="num-input" min="4" max="12" value="8">
+    <input type="number" id="input-balls" class="num-input" min="4" max="20" value="8">
   </div>
 
   <div class="setting-row">
@@ -185,7 +185,7 @@
 </div>
 
 <!-- 游戏页 -->
-<div id="screen-game" class="screen">
+<div id="screen-game" class="screen" style="padding-bottom:env(safe-area-inset-bottom,24px);">
   <div class="game-header">
     <button class="btn-back" id="btn-back">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -198,7 +198,8 @@
   <div class="grid-wrap">
     <canvas id="game-canvas"></canvas>
   </div>
-  <button class="btn-confirm" id="btn-confirm" style="display:none;" disabled>确认答案</button>
+  <button class="btn-confirm" id="btn-launch" style="display:none;margin:12px 20px 20px;">开始追踪</button>
+  <button class="btn-confirm" id="btn-confirm" style="display:none;margin:12px 20px 20px;" disabled>确认答案</button>
 </div>
 
 <!-- 结果页 -->
