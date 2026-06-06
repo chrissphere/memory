@@ -646,6 +646,29 @@ html, body {
   .grid.zone-deep .cell.zone-tr { background-color: rgba(245,158,11,0.42); }
   .grid.zone-deep .cell.zone-bl { background-color: rgba(34,197,94,0.42); }
   .grid.zone-deep .cell.zone-br { background-color: rgba(139,92,246,0.42); }
+
+  body.theme-light {
+    --bg: #F5F7FA;
+    --card: #FFFFFF;
+    --text: #1A1D23;
+    --text-secondary: #6B7280;
+    --border: #E5E7EB;
+    --primary-light: #EEF2FF;
+    --success-light: #DCFCE7;
+    --error-light: #FEE2E2;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  }
+
+  body.theme-light .cell.zone-tl { background-color: rgba(74,124,255,0.10); }
+  body.theme-light .cell.zone-tr { background-color: rgba(245,158,11,0.10); }
+  body.theme-light .cell.zone-bl { background-color: rgba(34,197,94,0.10); }
+  body.theme-light .cell.zone-br { background-color: rgba(139,92,246,0.10); }
+
+  body.theme-light .grid.zone-deep .cell.zone-tl { background-color: rgba(74,124,255,0.26); }
+  body.theme-light .grid.zone-deep .cell.zone-tr { background-color: rgba(245,158,11,0.26); }
+  body.theme-light .grid.zone-deep .cell.zone-bl { background-color: rgba(34,197,94,0.26); }
+  body.theme-light .grid.zone-deep .cell.zone-br { background-color: rgba(139,92,246,0.26); }
 }
 
 /* ── Landscape overlay ───────────────────────────────────── */
@@ -668,3 +691,27 @@ html, body {
   #rotate-overlay { display: flex; }
   body.rotate-mode #rotate-overlay { display: none; }
 }
+
+/* ── Manual theme override ───────────────────────────────── */
+body.theme-dark {
+  --bg: #111318;
+  --card: #1E2028;
+  --text: #F0F2F5;
+  --text-secondary: #9CA3AF;
+  --border: #2D3139;
+  --primary-light: #1E2540;
+  --success-light: #14271E;
+  --error-light: #2A1515;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+body.theme-dark .cell.zone-tl { background-color: rgba(74,124,255,0.18); }
+body.theme-dark .cell.zone-tr { background-color: rgba(245,158,11,0.18); }
+body.theme-dark .cell.zone-bl { background-color: rgba(34,197,94,0.18); }
+body.theme-dark .cell.zone-br { background-color: rgba(139,92,246,0.18); }
+
+body.theme-dark .grid.zone-deep .cell.zone-tl { background-color: rgba(74,124,255,0.42); }
+body.theme-dark .grid.zone-deep .cell.zone-tr { background-color: rgba(245,158,11,0.42); }
+body.theme-dark .grid.zone-deep .cell.zone-bl { background-color: rgba(34,197,94,0.42); }
+body.theme-dark .grid.zone-deep .cell.zone-br { background-color: rgba(139,92,246,0.42); }
